@@ -7,17 +7,17 @@
     <link rel="stylesheet" href="css/smoothness/jquery-ui-1.10.0.custom.min.css" />
     <link rel="stylesheet" href="css/fsm.css" />
   </head>
+
   <body>
     <!-- Main header -->
     <header>
       <nav>
         <h1>DFA / NFA Simulator</h1>
         <div>
-          <button class="delegate" disabled="disabled" title="Deterministic Finite Automaton">DFA</button>
+          <button class="delegate" title="Deterministic Finite Automaton">DFA</button>
           <button class="delegate" title="Non-Deterministic Finite Automaton">NFA</button>
-          <button id="resetButton" onclick="fsm.reset();" class="image" title="Reset">
-            <img src="images/empty.png" alt="Reset" />
-          </button>
+          <button id="resetButton" onclick="fsm.reset();" title="Reset">Reset</button>
+          
           <select id="examples" title="Examples">
             <option value="">Examples</option>
           </select>
@@ -28,37 +28,16 @@
     <main>
       <!-- Sidebar for tools -->
       <aside id="tools">
-        <section>
-          <h2>Tools</h2>
-          <div style="text-align:center;">
-            <button id="saveBtn" onclick="fsm.save();" class="image" title="Save">
-              <img src="images/empty.png" alt="Save" />
-            </button>
-            <button id="loadBtn" onclick="fsm.load();" class="image" title="Load" style="margin-right: 20px;">
-              <img src="images/empty.png" alt="Load" />
-            </button>
-            <button id="addStateBtn" onclick="fsm.addState();" class="image" title="Add State">
-              <img src="images/empty.png" alt="Add State" />
-            </button>
-          </div>
-        </section>
 
         <section>
           <h2>Test</h2>
           <label for="testString">Test Input:</label>
           <input id="testString" type="text" value="" />
           <div style="text-align:center; margin-top: 10px;">
-            <button id="testBtn" onclick="fsm.test($('#testString').val());" class="image" title="Test">
-              <img src="images/empty.png" alt="Test" />
-            </button>
-            <button id="stopBtn" onclick="fsm.debugStop();" disabled="disabled" class="image" title="Stop Debug">
-              <img src="images/empty.png" alt="Stop" />
-            </button>
-            <button id="debugBtn" onclick="fsm.debug($('#testString').val());" class="image" title="Start/Step Debug">
-              <img src="images/empty.png" alt="Debug" />
-            </button>
+            <button id="testBtn" onclick="fsm.test($('#testString').val());" class="image" title="Test">Test</button>
+            <button id="stopBtn" onclick="fsm.debugStop();" disabled="disabled" class="image" title="Stop Debug">Stop</button>
+            <button id="debugBtn" onclick="fsm.debug($('#testString').val());" class="image" title="Start/Step Debug">Start</button>
           </div>
-          <div id="testResult">&nbsp;</div>
         </section>
 
         <section>
@@ -87,24 +66,6 @@
         <div id="resultConsole"></div>
       </section>
     </main>
-
-    <!-- Save/Load Dialog -->
-    <div id="saveLoadDialog">
-      <div id="saveLoadTabs">
-        <ul>
-          <li><a href="#browserStorage">Browser Storage</a></li>
-          <li><a href="#plaintext">Plaintext</a></li>
-        </ul>
-        <div id="browserStorage">
-          <label for="machineName">Machine Name:</label>
-          <input id="machineName" type="text" value="Machine Name" />
-          <ul id="storedMachines"></ul>
-        </div>
-        <div id="plaintext">
-          <textarea></textarea>
-        </div>
-      </div>
-    </div>
 
     <!-- Scripts -->
     <script src="js/jquery-1.9.0.min.js"></script>
