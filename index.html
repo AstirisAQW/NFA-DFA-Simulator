@@ -34,17 +34,19 @@
           <label for="testString">Test Input:</label>
           <input id="testString" type="text" value="" />
           <div style="text-align:center; margin-top: 10px;">
-            <button id="testBtn" onclick="fsm.test($('#testString').val());" class="image" title="Test">Test</button>
-            <button id="stopBtn" onclick="fsm.debugStop();" disabled="disabled" class="image" title="Stop Debug">Stop</button>
-            <button id="debugBtn" onclick="fsm.debug($('#testString').val());" class="image" title="Start/Step Debug">Start</button>
+            <button id="testBtn" onclick="fsm.test($('#testString').val());" title="Test">Test</button>
+            <button id="stopBtn" onclick="fsm.debugStop();" disabled="disabled"title="Stop Debug">Stop</button>
+            <button id="debugBtn"onclick="fsm.debug($('#testString').val());" title="Start/Step Debug">Start</button>
           </div>
+          <div id="testResult">&nbsp;</div>
         </section>
 
         <section>
           <h2>Bulk Testing</h2>
-          <button id="bulkTestBtn" class="image" onclick="fsm.test({accept:$('#acceptStrings').val().split('\n'), reject:$('#rejectStrings').val().split('\n')});" title="Run Bulk Tests">
-            <img src="images/empty.png" alt="Bulk Test" />
+          <button id="bulkTestBtn" onclick="fsm.test({accept:$('#acceptStrings').val().split('\n'), reject:$('#rejectStrings').val().split('\n')});" 
+                  title="Run Bulk Tests">Test
           </button>
+          <div></div>
           <label for="acceptStrings">Accept (one per line):</label>
           <textarea id="acceptStrings" style="margin-bottom: 5px;"></textarea>
           <label for="rejectStrings">Reject (one per line):</label>
