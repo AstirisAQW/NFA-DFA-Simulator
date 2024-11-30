@@ -5,84 +5,6 @@ var fsm = (function() {
     var delegate = null; // Delegate managing FSM-specific logic (e.g., DFA, NFA)
     var container = null; // Container for the graphical FSM states
     var stateCounter = 0; // Counter for generating unique state IDs
-    var saveLoadDialog = null; // Dialog for saving/loading FSM configurations
-
-    /**
-     * Checks if localStorage is available in the current browser.
-     * @returns {boolean} - True if localStorage is supported, else false.
-     */
-    var localStorageAvailable = function() {
-        return (typeof Storage !== "undefined" && typeof localStorage !== "undefined");
-    };
-
-
-    /**
-     * Creates and initializes the save/load dialog.
-     * Configures tabs, input fields, and event handlers for interaction.
-     */
-    var makeSaveLoadDialog = function() {
-        saveLoadDialog = $('#saveLoadDialog'); // Get the dialog element
-        $('#saveLoadTabs').tabs(); // Initialize tabs
-        $('#saveLoadTabs textarea').height(275); // Set height for text areas
-        if (!localStorageAvailable()) {
-            // Disable browser storage tab if localStorage is not supported
-            $('#saveLoadTabs')
-                .tabs('option', 'active', 1) // Activate the plaintext tab
-                .tabs('option', 'disabled', [0]) // Disable the browser storage tab
-                .find('ul li').eq(0).attr('title', 'Browser Storage not supported in this browser');
-        }
-        saveLoadDialog.dialog({
-            autoOpen: false, // Dialog should not open automatically
-            dialogClass: 'loadSave no-close', // Custom class for styling
-            width: 500, // Width of the dialog
-            height: 450, // Height of the dialog
-            open: function() {
-                // Focus on the active input or textarea in the current tab
-                saveLoadDialog.find("div.ui-tabs-panel:not(.ui-tabs-hide)").find('input, textarea').focus();
-            }
-        });
-
-        // Input field behaviors (focus, blur, enter key handling)
-        $('#machineName')
-            .focus(function() {
-                if ($(this).val() === $(this).attr('title')) {
-                    $(this).val(''); // Clear placeholder text on focus
-                }
-            })
-            .blur(function() {
-                if ($(this).val() === '') {
-                    $(this).val($(this).attr('title')); // Restore placeholder text if empty
-                }
-            })
-            .keyup(function(event) {
-                if (event.which === $.ui.keyCode.ENTER) {
-                    // Trigger the last button click on Enter key
-                    saveLoadDialog.parent().find('.ui-dialog-buttonpane button').eq(-1).trigger('click');
-                }
-            });
-
-        // Event handlers for interacting with stored FSMs
-        $('#storedMachines')
-            .on('mouseover', 'li.machineName', function() {
-                $(this).find('div.delete').show(); // Show delete button on hover
-            })
-            .on('mouseout', 'li.machineName', function() {
-                $(this).find('div.delete').hide(); // Hide delete button when not hovering
-            })
-            .on('click', 'li.machineName div.delete', function(event) {
-                event.stopPropagation(); // Prevent event bubbling
-                // Remove FSM from localStorage and refresh the list
-                localStorage.removeItem($(this).closest('li.machineName').find('span').html());
-                refreshLocalStorageInfo();
-            })
-            .on('click', ' li.machineName', function() { // Select FSM
-                $('#machineName').val($(this).find('span').html()).focus(); // Set the selected FSM name in the input field
-            })
-            .on('dblclick', 'li.machineName', function() { // Load FSM directly on double click
-                $('#machineName').val($(this).find('span').html()); // Set the FSM name
-                saveLoadDialog.parent().find('.ui-dialog-buttonpane button').eq(-1).trigger('click'); // Trigger save action
-            });
-    };
 
     /**
      * Initializes jsPlumb library settings for drawing and managing connections.
@@ -155,7 +77,7 @@ var fsm = (function() {
             }
         });
 
-        // Default to DFA on initialization
+        // Default to DFA
         $('button.delegate').each(function() {
             if ($(this).html() === 'DFA') {
                 $(this).click(); // Click the DFA button
@@ -176,10 +98,6 @@ var fsm = (function() {
                 $(this).click(); // Set the correct delegate based on the model type
             }
         });
-
-		// Load Bulk Tests
-        $('#acceptStrings').val(model.bulkTests.accept); // Set accept strings
-        $('#rejectStrings').val(model.bulkTests.reject); // Set reject strings
 
 		// Create states
 		$.each(model.states, function(stateId, data) {

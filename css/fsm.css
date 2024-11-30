@@ -154,8 +154,8 @@ body {
       }
   
   #fsmDebugInputStatus {
-    display: inline-block;
-    margin-left: 250px;
+    display: center;
+    margin-left: 20px;
   }
   
     span.consumedInput {

@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DFA / NFA Simulator</title>
+    <link rel="stylesheet" href="css/smoothness/jquery-ui-1.10.0.custom.min.css" />
+    <link rel="stylesheet" href="css/fsm.css" />
+  </head>
+
+  <body>
+    <!-- Main header -->
+    <header>
+      <nav>
+        <h1>DFA / NFA Simulator</h1>
+        <div>
+          <button class="delegate" title="Deterministic Finite Automaton">DFA</button>
+          <button class="delegate" title="Non-Deterministic Finite Automaton">NFA</button>
+          <button id="resetButton" onclick="fsm.reset();" title="Reset">Reset</button>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <!-- Sidebar for tools -->
+      <aside id="tools">
+
+        <section>
+          <h2>Test</h2>
+          <label for="testString">Test Input:</label>
+          <input id="testString" type="text" value="" />
+          <div style="text-align:center; margin-top: 10px;">
+            <button id="testBtn" onclick="fsm.test($('#testString').val());" title="Test">Test</button>
+            <button id="stopBtn" onclick="fsm.debugStop();" disabled="disabled"title="Stop Debug">Stop</button>
+            <button id="debugBtn"onclick="fsm.debug($('#testString').val());" title="Start/Step Debug">Start</button>
+          </div>
+          <div id="testResult">&nbsp;</div>
+          
+          <div id="fsmDebugInputStatus" class="fsmStatus" style="display:none;">
+            <span class="consumedInput"></span>
+            <span class="currentInput"></span>
+            <span class="futureInput"></span>
+          </div>
+        </section>
+
+      </aside>
+
+      <!-- Main content -->
+      <section id="mainHolder">
+        <div id="machineGraph">
+          <div id="dfaStatus" style="display:none;"></div>
+        </div>
+
+      </section>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/jquery-1.9.0.min.js"></script>
+    <script src="js/jquery-ui-1.10.0.custom.min.js"></script> 
+    <script src="js/jquery.jsPlumb-1.3.16-all-min.js"></script>
+
+    <script src="js/DFA.js"></script>
+    <script src="js/NFA.js"></script>
+    <script src="js/dfa_delegate.js"></script>
+    <script src="js/nfa_delegate.js"></script>
+    
+    <script src="js/test_ui.js"></script>
+  </body>
+</html>
