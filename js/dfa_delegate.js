@@ -50,7 +50,7 @@ var dfa_delegate = (function() {
   
   var dialogDelete = function() {
     dfa.removeTransition(dialogActiveConnection.sourceId, dialogActiveConnection.getLabel(), dialogActiveConnection.targetId);
-    fsm.removeConnection(dialogActiveConnection);
+    fsm.deleteConnection(dialogActiveConnection);
     dialogDiv.dialog("close");
   };
   
@@ -137,29 +137,5 @@ var dfa_delegate = (function() {
       $('.current').removeClass('current');
       return self;
     },
-    
-    serialize: function() {
-      // Convert dfa into common serialized format
-      var model = {};
-      model.type = 'DFA';
-      model.dfa = dfa.serialize();
-      model.states = {};
-      model.transitions = [];
-      $.each(model.dfa.transitions, function(stateA, transition) {
-        model.states[stateA] = {};
-        $.each(transition, function(character, stateB) {
-          model.states[stateB] = {};
-          model.transitions.push({stateA:stateA, label:character, stateB:stateB});
-        });
-      });
-      $.each(model.dfa.acceptStates, function(index, state) {
-        model.states[state].isAccept = true;
-      });
-      return model;
-    },
-    
-    deserialize: function(model) {
-      dfa.deserialize(model.dfa);
-    }
   };
 }()).init();

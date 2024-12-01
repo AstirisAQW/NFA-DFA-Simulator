@@ -41,7 +41,7 @@ var fsm = (function() {
 
         // Handle state deletion
         container.on('click', 'img.delete', function() {
-            self.removeState($(this).closest('div.state')); // Remove the state
+            self.deleteState($(this).closest('div.state')); // Remove the state
         });
 
         // Handle state renaming
@@ -85,49 +85,6 @@ var fsm = (function() {
         });
     };
 
-	var loadSerializedFSM = function(serializedFSM) {
-        var model = serializedFSM;
-        if (typeof serializedFSM === 'string') {
-            model = JSON.parse(serializedFSM); // Parse the serialized FSM if it's a string
-        }
-
-        // Load the delegate and reset everything
-        self.reset();
-        $('button.delegate').each(function() {
-            if ($(this).html() === model.type) {
-                $(this).click(); // Set the correct delegate based on the model type
-            }
-        });
-
-		// Create states
-		$.each(model.states, function(stateId, data) {
-			var state = null;
-			if (stateId !== 'start') {
-                // Create a new state element and position it
-				state = makeState(stateId, data.displayId)
-					.css('left', data.left + 'px')
-					.css('top', data.top + 'px')
-					.appendTo(container);
-                jsPlumb.draggable(state, {containment:"parent"}); // Make the state draggable
-                makeStatePlumbing(state); // Initialize plumbing for the state
-			} else {
-				state = $('#start'); // Reference to the start state
-			}
-			if (data.isAccept) {state.find('input.isAccept').prop('checked', true);} // Mark as accept state if applicable
-		});
-
-        // Create Transitions
-        jsPlumb.unbind("jsPlumbConnection"); // Unbind listener to prevent transition prompts
-        $.each(model.transitions, function(index, transition) {
-            // Connect states with transitions
-            jsPlumb.connect({source:transition.stateA, target:transition.stateB}).setLabel(transition.label);
-        });
-        jsPlumb.bind("jsPlumbConnection", delegate.connectionAdded); // Rebind connection added event
-
-        // Deserialize to the FSM
-        delegate.deserialize(model);
-	};
-
 	var updateStatusUI = function(status) {
         // Update the UI with the current status of the FSM
 		$('#fsmDebugInputStatus span.consumedInput').html(status.input.substring(0, status.inputIndex));
@@ -148,15 +105,6 @@ var fsm = (function() {
 		delegate.connectionClicked(connection); // Handle connection click event
 	};
 
-    var checkHashForModel = function() {
-        var hash = window.location.hash; // Get the URL hash
-        hash = hash.replace('#', ''); // Remove the hash symbol
-        hash = decodeURIComponent(hash); // Decode the URI component
-        if (hash) {
-            loadSerializedFSM(hash); // Load FSM if hash is present
-        }
-    };
-
 
 	// Initialization on DOM ready
 	var domReadyInit = function() {
@@ -166,15 +114,8 @@ var fsm = (function() {
             // Adjust container height on window resize
 			container.height($(window).height() - $('#mainHolder h1').outerHeight() - $('#footer').outerHeight() - $('#bulkResultHeader').outerHeight() - $('#resultConsole').outerHeight() - 30 + 'px');
 			jsPlumb.repaintEverything(); // Repaint jsPlumb elements
-		});
+		}); 
 		$(window).resize(); // Trigger resize to set initial height
-
-        // Setup handling 'enter' in test string box
-        $('#testString').keyup(function(event) {
-            if (event.which === $.ui.keyCode.ENTER) {
-                $('#testBtn').trigger('click'); // Trigger test button on Enter key
-            }
-        });
 
         // Add state on double click in the container
 		container.dblclick(function(event) {
@@ -184,21 +125,6 @@ var fsm = (function() {
         initJsPlumb(); // Initialize jsPlumb
         initStateEvents(); // Initialize state event handlers
         initFSMSelectors(); // Initialize FSM type selectors
-        makeSaveLoadDialog(); // Create save/load dialog
-
-        // Example box for loading predefined FSMs
-        var exampleBox = $('#examples').on('change', function() {
-            if ($(this).val() !== '') {
-                loadSerializedFSM(fsm_examples[$(this).val()]); // Load selected example FSM
-                $(this).val(''); // Clear selection
-            }
-        });
-        // Populate example box with available FSM examples
-        $.each(fsm_examples, function(key, serializedFSM) {
-            $('<option></option>', {value:key}).html(key).appendTo(exampleBox);
-        });
-
-        checkHashForModel(); // Check URL hash for FSM model
 	};
 
 	var makeStartState = function() {
@@ -293,7 +219,7 @@ var fsm = (function() {
             }
         },
 
-		removeState: function(state) {
+		deleteState: function(state) {
 			var stateId = state.attr('id'); // Get the ID of the state to remove
 			jsPlumb.select({source:stateId}).detach(); // Remove all connections from UI
 			jsPlumb.select({target:stateId}).detach(); // Remove all connections to UI
@@ -303,7 +229,7 @@ var fsm = (function() {
 			return self; // Return the FSM object
 		},
 
-		removeConnection: function(connection) {
+		deleteConnection: function(connection) {
 			jsPlumb.detach(connection); // Detach the connection
 		},
 
@@ -332,10 +258,10 @@ var fsm = (function() {
         },
 
         debug: function(input) {
-            if ($('#stopBtn').prop('disabled')) {
+            if ($('#stopButton').prop('disabled')) {
                 $('#testResult').html('&nbsp;'); // Clear test result
-                $('#stopBtn').prop('disabled', false); // Enable stop button
-                $('#loadBtn, #testBtn, #bulkTestBtn, #testString, #resetBtn').prop('disabled', true); // Disable other buttons
+                $('#stopButton').prop('disabled', false); // Enable stop button
+                $('#testButton, #testString, #resetButton').prop('disabled', true); // Disable other buttons
                 $('button.delegate').prop('disabled', true); // Disable delegate buttons
                 $('#fsmDebugInputStatus').show(); // Show debug input status
                 delegate.debugStart(); // Start debugging
@@ -348,15 +274,15 @@ var fsm = (function() {
             delegate.updateUI(); // Update delegate UI
             if (status.status !== 'Active') {
                 $('#testResult').html(status.status === 'Accept' ? 'Accepted' : 'Rejected').effect('highlight', {color: status.status === 'Accept' ? '#bfb' : '#fbb'}, 1000); // Show final result
-                $('#debugBtn').prop('disabled', true); // Disable debug button
+                $('#debugButton').prop('disabled', true); // Disable debug button
             }
             return self; // Return the FSM object
         },
 
         debugStop: function() {
             $('#fsmDebugInputStatus').hide(); // Hide debug input status
-            $('#stopBtn').prop('disabled', true); // Disable stop button
-            $('#loadBtn, #testBtn, #bulkTestBtn, #debugBtn, #testString, #resetBtn').prop('disabled', false); // Enable other buttons
+            $('#stopButton').prop('disabled', true); // Disable stop button
+            $('#testButton, #debugButton, #testString, #resetButton').prop('disabled', false); // Enable other buttons
             $('button.delegate').prop('disabled', false).each(function() {
                 switch ($(this).html()) {
                     case 'DFA': if (delegate === dfa_delegate) {$(this).prop('disabled', true);} break; // Disable DFA button if currently selected
@@ -365,73 +291,13 @@ var fsm = (function() {
             });
             delegate.debugStop (); // Stop debugging
             return self; // Return the FSM object
-        },
+        },  
 
         reset: function() {
             self.setDelegate(delegate); // Reset the delegate
             $('#testString').val(''); // Clear the test string input
             $('#testResult').html('&nbsp;'); // Clear the test result display
-            $('#acceptStrings').val(''); // Clear accept strings input
-            $('#rejectStrings').val(''); // Clear reject strings input
-            $('#resultConsole').empty(); // Clear the result console
             return self; // Return the FSM object
         },
-	
-		save: function() {
-            var model = delegate.serialize(); // Serialize the FSM model
-            container.find('div.state').each(function() {
-                var id = $(this).attr('id'); // Get the ID of each state
-                if (id !== 'start') {
-                    // Update the model with the state position and display ID
-                    $.extend(model.states[id], $(this).position());
-                    $.extend(model.states[id], {displayId: $(this).data('displayid')});
-                }
-            });
-            model.bulkTests = {
-                accept: $('#acceptStrings').val(), // Save accept strings
-                reject: $('#rejectStrings').val() // Save reject strings
-            };
-            var serializedModel = JSON.stringify(model); // Convert model to JSON string
-
-            var finishSaving = function() {
-                var storageKey = $('#machineName').val(); // Get the name for storage
-                if (!storageKey) {
-                    alert("Please Provide a Name"); // Alert if no name is provided
-                    return false;
-                }
-                if (localStorageAvailable()) {
-                    localStorage.setItem(storageKey, serializedModel); // Save to localStorage
-                } else {
-                    alert("Can't save machine to Browser Storage, this browser doesn't support it."); // Alert if localStorage is not supported
-                    return false;
-                }
-                return true; // Indicate success
-            };
-
-            var buttonUpdater = function(event, ui) {
-                if (ui.newPanel.attr('id') === 'browserStorage') {
-                    // Update buttons for browser storage tab
-                    saveLoadDialog.dialog('option', 'buttons', {
-                        Cancel: function() { saveLoadDialog.dialog('close'); },
-                        Save: function() { if (finishSaving()) { saveLoadDialog.dialog('close'); } }
-                    });
-                } else if (ui.newPanel.attr('id') === 'plaintext' || ui.newPanel.attr('id') === 'shareableURL') {
-                    ui.newPanel.find('textarea').select(); // Select text area content
-                    saveLoadDialog.dialog('option', 'buttons', {
-                        Copy: function() { ui.newPanel.find('textarea').select(); document.execCommand('copy'); },
-                        Close: function() { saveLoadDialog.dialog('close'); }
-                    });
-                }
-            };
-
-            saveLoadDialog.dialog('option', 'title', 'Save Automaton'); // Set dialog title
-            $('#saveLoadTabs').on('tabsactivate', buttonUpdater); // Update buttons on tab change
-            buttonUpdater(null, { newPanel: $('#saveLoadTabs div').eq($('#saveLoadTabs').tabs('option', 'active')) }); // Initialize button state
-
-            refreshLocalStorageInfo(); // Refresh the list of stored FSMs
-            $('#plaintext textarea').val(serializedModel); // Set serialized model in plaintext tab
-            $('#shareableURL textarea').val(window.location.href.split("#")[0] + '#' + encodeURIComponent(serializedModel)); // Create shareable URL
-            saveLoadDialog.dialog('open'); // Open the save/load dialog
-		}
 	};
 })().init(); // Initialize the FSM module
