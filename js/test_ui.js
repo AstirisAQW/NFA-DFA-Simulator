@@ -6,9 +6,7 @@ var fsm = (function() {
     var container = null; // Container for the graphical FSM states
     var stateCounter = 0; // Counter for generating unique state IDs
 
-    /**
-     * Initializes jsPlumb library settings for drawing and managing connections.
-     */
+    // Initializes jsPlumb library settings for drawing and managing connections.
     var initJsPlumb = function() {
         jsPlumb.importDefaults({
             Anchors: ["Continuous", "Continuous"], // Dynamic anchors for connections
@@ -24,13 +22,11 @@ var fsm = (function() {
             PaintStyle: { strokeStyle: '#0dd', lineWidth: 2 } // Default connection style
         });
 
-        // Bind click event on connections
-        jsPlumb.bind("click", connectionClicked);
+        jsPlumb.bind("click", connectionClicked);   // Bind click event on connections
+
     };
 
-    /**
-     * Initializes event handlers for state elements.
-     */
+    // Initializes event handlers for state elements.
     var initStateEvents = function() {
         // Show delete button on hover
         container.on('mouseover', 'div.state', function() {
@@ -104,7 +100,6 @@ var fsm = (function() {
 	var connectionClicked = function(connection) {
 		delegate.connectionClicked(connection); // Handle connection click event
 	};
-
 
 	// Initialization on DOM ready
 	var domReadyInit = function() {
@@ -298,6 +293,6 @@ var fsm = (function() {
             $('#testString').val(''); // Clear the test string input
             $('#testResult').html('&nbsp;'); // Clear the test result display
             return self; // Return the FSM object
-        },
+        }
 	};
 })().init(); // Initialize the FSM module

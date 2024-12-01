@@ -46,13 +46,13 @@ var nfa_delegate = (function() {
   };
 
   var dialogCancel = function(update) {
-    if (!update) {fsm.removeConnection(dialogActiveConnection);}
+    if (!update) {fsm.deleteConnection(dialogActiveConnection);}
     dialogDiv.dialog("close");
   };
   
   var dialogDelete = function() {
     nfa.removeTransition(dialogActiveConnection.sourceId, dialogActiveConnection.getLabel(), dialogActiveConnection.targetId);
-    fsm.removeConnection(dialogActiveConnection);
+    fsm.deleteConnection(dialogActiveConnection);
     dialogDiv.dialog("close");
   };
   

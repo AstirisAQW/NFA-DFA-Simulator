@@ -92,14 +92,30 @@ var fsm = (function() {
             Anchors: ["Continuous", "Continuous"], // Dynamic anchors for connections
             ConnectorZIndex: 5, // Z-index for connectors
             ConnectionsDetachable: false, // Prevent connections from being detached
-            Endpoint: ["Dot", { radius: 2 }], // Circular endpoints
-            HoverPaintStyle: { strokeStyle: "#d44", lineWidth: 2 }, // Style on hover
+            Endpoint: ["Dot", {
+                radius: 2
+            }], // Circular endpoints
+            HoverPaintStyle: {
+                strokeStyle: "#d44",
+                lineWidth: 2
+            }, // Style on hover
             ConnectionOverlays: [
-                ["Arrow", { location: 1, length: 14, foldback: 0.8 }], // Arrow overlay
-                ["Label", { location: 0.5 }] // Label overlay
+                ["Arrow", {
+                    location: 1,
+                    length: 14,
+                    foldback: 0.8
+                }], // Arrow overlay
+                ["Label", {
+                    location: 0.5
+                }] // Label overlay
             ],
-            Connector: ["StateMachine", { curviness: 20 }], // Curved connectors
-            PaintStyle: { strokeStyle: '#0dd', lineWidth: 2 } // Default connection style
+            Connector: ["StateMachine", {
+                curviness: 20
+            }], // Curved connectors
+            PaintStyle: {
+                strokeStyle: '#0dd',
+                lineWidth: 2
+            } // Default connection style
         });
 
         // Bind click event on connections
@@ -145,8 +161,12 @@ var fsm = (function() {
         $('button.delegate').on('click', function() {
             var newDelegate = null;
             switch ($(this).html()) {
-                case 'DFA': newDelegate = dfa_delegate; break; // Set delegate to DFA
-                case 'NFA': newDelegate = nfa_delegate; break; // Set delegate to NFA
+                case 'DFA':
+                    newDelegate = dfa_delegate;
+                    break; // Set delegate to DFA
+                case 'NFA':
+                    newDelegate = nfa_delegate;
+                    break; // Set delegate to NFA
             }
             if (newDelegate !== delegate) {
                 self.setDelegate(newDelegate); // Change the delegate
@@ -163,7 +183,7 @@ var fsm = (function() {
         });
     };
 
-	var loadSerializedFSM = function(serializedFSM) {
+    var loadSerializedFSM = function(serializedFSM) {
         var model = serializedFSM;
         if (typeof serializedFSM === 'string') {
             model = JSON.parse(serializedFSM); // Parse the serialized FSM if it's a string
@@ -177,58 +197,65 @@ var fsm = (function() {
             }
         });
 
-		// Load Bulk Tests
+        // Load Bulk Tests
         $('#acceptStrings').val(model.bulkTests.accept); // Set accept strings
         $('#rejectStrings').val(model.bulkTests.reject); // Set reject strings
 
-		// Create states
-		$.each(model.states, function(stateId, data) {
-			var state = null;
-			if (stateId !== 'start') {
+        // Create states
+        $.each(model.states, function(stateId, data) {
+            var state = null;
+            if (stateId !== 'start') {
                 // Create a new state element and position it
-				state = makeState(stateId, data.displayId)
-					.css('left', data.left + 'px')
-					.css('top', data.top + 'px')
-					.appendTo(container);
-                jsPlumb.draggable(state, {containment:"parent"}); // Make the state draggable
+                state = makeState(stateId, data.displayId)
+                    .css('left', data.left + 'px')
+                    .css('top', data.top + 'px')
+                    .appendTo(container);
+                jsPlumb.draggable(state, {
+                    containment: "parent"
+                }); // Make the state draggable
                 makeStatePlumbing(state); // Initialize plumbing for the state
-			} else {
-				state = $('#start'); // Reference to the start state
-			}
-			if (data.isAccept) {state.find('input.isAccept').prop('checked', true);} // Mark as accept state if applicable
-		});
+            } else {
+                state = $('#start'); // Reference to the start state
+            }
+            if (data.isAccept) {
+                state.find('input.isAccept').prop('checked', true);
+            } // Mark as accept state if applicable
+        });
 
         // Create Transitions
         jsPlumb.unbind("jsPlumbConnection"); // Unbind listener to prevent transition prompts
         $.each(model.transitions, function(index, transition) {
             // Connect states with transitions
-            jsPlumb.connect({source:transition.stateA, target:transition.stateB}).setLabel(transition.label);
+            jsPlumb.connect({
+                source: transition.stateA,
+                target: transition.stateB
+            }).setLabel(transition.label);
         });
         jsPlumb.bind("jsPlumbConnection", delegate.connectionAdded); // Rebind connection added event
 
         // Deserialize to the FSM
         delegate.deserialize(model);
-	};
+    };
 
-	var updateStatusUI = function(status) {
+    var updateStatusUI = function(status) {
         // Update the UI with the current status of the FSM
-		$('#fsmDebugInputStatus span.consumedInput').html(status.input.substring(0, status.inputIndex));
-		if (status.nextChar === '') {
-			$('#fsmDebugInputStatus span.currentInput').html(delegate.getEmptyLabel());
-			$('#fsmDebugInputStatus span.futureInput').html(status.input.substring(status.inputIndex));
-		} else if (status.nextChar === null) {
-			$('#fsmDebugInputStatus span.currentInput').html('[End of Input]');
-			$('#fsmDebugInputStatus span.futureInput').html('');
-		} else {
-			$('#fsmDebugInputStatus span.currentInput').html(status.input.substr(status.inputIndex, 1));
-			$('#fsmDebugInputStatus span.futureInput').html(status.input.substring(status.inputIndex+1));
-		}
+        $('#fsmDebugInputStatus span.consumedInput').html(status.input.substring(0, status.inputIndex));
+        if (status.nextChar === '') {
+            $('#fsmDebugInputStatus span.currentInput').html(delegate.getEmptyLabel());
+            $('#fsmDebugInputStatus span.futureInput').html(status.input.substring(status.inputIndex));
+        } else if (status.nextChar === null) {
+            $('#fsmDebugInputStatus span.currentInput').html('[End of Input]');
+            $('#fsmDebugInputStatus span.futureInput').html('');
+        } else {
+            $('#fsmDebugInputStatus span.currentInput').html(status.input.substr(status.inputIndex, 1));
+            $('#fsmDebugInputStatus span.futureInput').html(status.input.substring(status.inputIndex + 1));
+        }
 
-	};
+    };
 
-	var connectionClicked = function(connection) {
-		delegate.connectionClicked(connection); // Handle connection click event
-	};
+    var connectionClicked = function(connection) {
+        delegate.connectionClicked(connection); // Handle connection click event
+    };
 
     var checkHashForModel = function() {
         var hash = window.location.hash; // Get the URL hash
@@ -240,16 +267,16 @@ var fsm = (function() {
     };
 
 
-	// Initialization on DOM ready
-	var domReadyInit = function() {
-		self.setGraphContainer($('#machineGraph')); // Set the graph container
+    // Initialization on DOM ready
+    var domReadyInit = function() {
+        self.setGraphContainer($('#machineGraph')); // Set the graph container
 
-		$(window).resize(function() {
+        $(window).resize(function() {
             // Adjust container height on window resize
-			container.height($(window).height() - $('#mainHolder h1').outerHeight() - $('#footer').outerHeight() - $('#bulkResultHeader').outerHeight() - $('#resultConsole').outerHeight() - 30 + 'px');
-			jsPlumb.repaintEverything(); // Repaint jsPlumb elements
-		});
-		$(window).resize(); // Trigger resize to set initial height
+            container.height($(window).height() - $('#mainHolder h1').outerHeight() - $('#footer').outerHeight() - $('#bulkResultHeader').outerHeight() - $('#resultConsole').outerHeight() - 30 + 'px');
+            jsPlumb.repaintEverything(); // Repaint jsPlumb elements
+        });
+        $(window).resize(); // Trigger resize to set initial height
 
         // Setup handling 'enter' in test string box
         $('#testString').keyup(function(event) {
@@ -259,10 +286,13 @@ var fsm = (function() {
         });
 
         // Add state on double click in the container
-		container.dblclick(function(event) {
-			self.addState({top: event.offsetY, left: event.offsetX}); // Add state at clicked position
-		});
-		
+        container.dblclick(function(event) {
+            self.addState({
+                top: event.offsetY,
+                left: event.offsetX
+            }); // Add state at clicked position
+        });
+
         initJsPlumb(); // Initialize jsPlumb
         initStateEvents(); // Initialize state event handlers
         initFSMSelectors(); // Initialize FSM type selectors
@@ -277,32 +307,34 @@ var fsm = (function() {
         });
         // Populate example box with available FSM examples
         $.each(fsm_examples, function(key, serializedFSM) {
-            $('<option></option>', {value:key}).html(key).appendTo(exampleBox);
+            $('<option></option>', {
+                value: key
+            }).html(key).appendTo(exampleBox);
         });
 
         checkHashForModel(); // Check URL hash for FSM model
-	};
+    };
 
-	var makeStartState = function() {
-		var startState = makeState('start'); // Create the start state
-		startState.find('div.delete').remove(); // Can't delete start state
-		container.append(startState); // Add start state to the container
-		makeStatePlumbing(startState); // Initialize plumbing for the start state
-	};
+    var makeStartState = function() {
+        var startState = makeState('start'); // Create the start state
+        startState.find('div.delete').remove(); // Can't delete start state
+        container.append(startState); // Add start state to the container
+        makeStatePlumbing(startState); // Initialize plumbing for the start state
+    };
 
-	/**
-	 * Create a new state.
-	 * @param {string} stateId Internal ID of the new state.
-	 * @param {string} [displayId] Displayed ID of the state, by default the internal ID.
-	 */
-	var makeState = function(stateId, displayId) {
-		displayId = displayId || stateId; // Use stateId as displayId if not provided
-		return $('<div id="' + stateId + '" class="state" data-displayid="' + displayId + '"></div>')
-		.append('<input id="' + stateId + '_isAccept' + '" type="checkbox" class="isAccept" value="true" title="Accept State" />') // Checkbox for accept state
-		.append('<span class="stateName">' + displayId + '</span>') // Displayed state name
-		.append('<div class="plumbSource" title="Drag from here to create new transition">&nbsp;</div>') // Source for creating transitions
-		.append('<div class="delete" style="display:none;"><img class="delete" src="images/empty.png" title="Delete"/></div>'); // Delete button
-	};
+    /**
+     * Create a new state.
+     * @param {string} stateId Internal ID of the new state.
+     * @param {string} [displayId] Displayed ID of the state, by default the internal ID.
+     */
+    var makeState = function(stateId, displayId) {
+        displayId = displayId || stateId; // Use stateId as displayId if not provided
+        return $('<div id="' + stateId + '" class="state" data-displayid="' + displayId + '"></div>')
+            .append('<input id="' + stateId + '_isAccept' + '" type="checkbox" class="isAccept" value="true" title="Accept State" />') // Checkbox for accept state
+            .append('<span class="stateName">' + displayId + '</span>') // Displayed state name
+            .append('<div class="plumbSource" title="Drag from here to create new transition">&nbsp;</div>') // Source for creating transitions
+            .append('<div class="delete" style="display:none;"><img class="delete" src="images/empty.png" title="Delete"/></div>'); // Delete button
+    };
 
     var makeStatePlumbing = function(state) {
         var source = state.find('.plumbSource'); // Get the source element for transitions
@@ -315,12 +347,14 @@ var fsm = (function() {
         });
 
         jsPlumb.makeTarget(state, {
-            dropOptions: { hoverClass: 'dragHover' } // Set hover class for drop options
+            dropOptions: {
+                hoverClass: 'dragHover'
+            } // Set hover class for drop options
         });
         return state; // Return the state with plumbing
     };
 
-	return {
+    return {
         init: function() {
             self = this; // Set reference to the FSM object
             $(domReadyInit); // Initialize on DOM ready
@@ -348,23 +382,27 @@ var fsm = (function() {
         },
 
         addState: function(location) {
-            while ($('#s' + stateCounter).length > 0) { ++stateCounter; } // Prevent duplicate states after loading
+            while ($('#s' + stateCounter).length > 0) {
+                ++stateCounter;
+            } // Prevent duplicate states after loading
             var state = makeState('s' + stateCounter); // Create a new state
             if (location && location.left && location.top) {
                 state.css('left', location.left + 'px') // Set left position
                     .css('top', location.top + 'px'); // Set top position
             }
             container.append(state); // Add state to the container
-            jsPlumb.draggable(state, { containment: "parent" }); // Make the state draggable
+            jsPlumb.draggable(state, {
+                containment: "parent"
+            }); // Make the state draggable
             makeStatePlumbing(state); // Initialize plumbing for the state
             return self; // Return the FSM object
         },
 
-		/**
-		 * Change the displayed name of a state. The start state cannot
-		 * be renamed, it’s a no-op if the given state is the start state.
-		 * @param {jQuery} state The state to rename.
-		 */
+        /**
+         * Change the displayed name of a state. The start state cannot
+         * be renamed, it’s a no-op if the given state is the start state.
+         * @param {jQuery} state The state to rename.
+         */
         renameState: function(state) {
             if (state.attr('id') !== 'start') { // Check if it's not the start state
                 var newname = window.prompt('New name', state.data('displayid')); // Prompt for new name
@@ -375,29 +413,38 @@ var fsm = (function() {
             }
         },
 
-		removeState: function(state) {
-			var stateId = state.attr('id'); // Get the ID of the state to remove
-			jsPlumb.select({source:stateId}).detach(); // Remove all connections from UI
-			jsPlumb.select({target:stateId}).detach(); // Remove all connections to UI
-			state.remove(); // Remove state from UI
-			delegate.fsm().removeTransitions(stateId); // Remove all transitions from model touching this state
-			delegate.fsm().removeAcceptState(stateId); // Ensure no trace is left in accept states
-			return self; // Return the FSM object
-		},
+        removeState: function(state) {
+            var stateId = state.attr('id'); // Get the ID of the state to remove
+            jsPlumb.select({
+                source: stateId
+            }).detach(); // Remove all connections from UI
+            jsPlumb.select({
+                target: stateId
+            }).detach(); // Remove all connections to UI
+            state.remove(); // Remove state from UI
+            delegate.fsm().removeTransitions(stateId); // Remove all transitions from model touching this state
+            delegate.fsm().removeAcceptState(stateId); // Ensure no trace is left in accept states
+            return self; // Return the FSM object
+        },
 
-		removeConnection: function(connection) {
-			jsPlumb.detach(connection); // Detach the connection
-		},
+        removeConnection: function(connection) {
+            jsPlumb.detach(connection); // Detach the connection
+        },
 
         test: function(input) {
             if ($.type(input) === 'string') {
                 $('#testResult').html('Testing...'); // Show testing message
                 var accepts = delegate.fsm().accepts(input); // Test if input is accepted
-                $('#testResult').html(accepts ? 'Accepted' : 'Rejected').effect('highlight', {color: accepts ? '#bfb' : '#fbb'}, 1000); // Show result with highlight
+                $('#testResult').html(accepts ? 'Accepted' : 'Rejected').effect('highlight', {
+                    color: accepts ? '#bfb' : '#fbb'
+                }, 1000); // Show result with highlight
             } else {
                 $('#resultConsole').empty(); // Clear the result console
                 var makePendingEntry = function(input, type) {
-                    return $('<div></div>', {'class': 'pending', title: 'Pending'}).append(type + ': ' + (input === '' ? '[Empty String]' : input)).appendTo('#resultConsole'); // Create pending entry
+                    return $('<div></div>', {
+                        'class': 'pending',
+                        title: 'Pending'
+                    }).append(type + ': ' + (input === '' ? '[Empty String]' : input)).appendTo('#resultConsole'); // Create pending entry
                 };
                 var updateEntry = function(result, entry) {
                     entry.removeClass('pending').addClass(result).attr('title', result).append(' -- ' + result); // Update entry with result
@@ -408,7 +455,9 @@ var fsm = (function() {
                 $.each(input.reject, function(index, string) {
                     updateEntry((delegate.fsm().accepts(string) ? 'Fail' : 'Pass'), makePendingEntry(string, 'Reject')); // Test reject strings
                 });
-                $('#bulkResultHeader').effect('highlight', {color: '#add'}, 1000); // Highlight bulk result header
+                $('#bulkResultHeader').effect('highlight', {
+                    color: '#add'
+                }, 1000); // Highlight bulk result header
             }
             return self; // Return the FSM object
         },
@@ -429,7 +478,9 @@ var fsm = (function() {
             updateStatusUI(status); // Update UI with status
             delegate.updateUI(); // Update delegate UI
             if (status.status !== 'Active') {
-                $('#testResult').html(status.status === 'Accept' ? 'Accepted' : 'Rejected').effect('highlight', {color: status.status === 'Accept' ? '#bfb' : '#fbb'}, 1000); // Show final result
+                $('#testResult').html(status.status === 'Accept' ? 'Accepted' : 'Rejected').effect('highlight', {
+                    color: status.status === 'Accept' ? '#bfb' : '#fbb'
+                }, 1000); // Show final result
                 $('#debugBtn').prop('disabled', true); // Disable debug button
             }
             return self; // Return the FSM object
@@ -441,11 +492,19 @@ var fsm = (function() {
             $('#loadBtn, #testBtn, #bulkTestBtn, #debugBtn, #testString, #resetBtn').prop('disabled', false); // Enable other buttons
             $('button.delegate').prop('disabled', false).each(function() {
                 switch ($(this).html()) {
-                    case 'DFA': if (delegate === dfa_delegate) {$(this).prop('disabled', true);} break; // Disable DFA button if currently selected
-                    case 'NFA': if (delegate === nfa_delegate) {$(this).prop('disabled', true);} break; // Disable NFA button if currently selected
+                    case 'DFA':
+                        if (delegate === dfa_delegate) {
+                            $(this).prop('disabled', true);
+                        }
+                        break; // Disable DFA button if currently selected
+                    case 'NFA':
+                        if (delegate === nfa_delegate) {
+                            $(this).prop('disabled', true);
+                        }
+                        break; // Disable NFA button if currently selected
                 }
             });
-            delegate.debugStop (); // Stop debugging
+            delegate.debugStop(); // Stop debugging
             return self; // Return the FSM object
         },
 
@@ -458,15 +517,17 @@ var fsm = (function() {
             $('#resultConsole').empty(); // Clear the result console
             return self; // Return the FSM object
         },
-	
-		save: function() {
+
+        save: function() {
             var model = delegate.serialize(); // Serialize the FSM model
             container.find('div.state').each(function() {
                 var id = $(this).attr('id'); // Get the ID of each state
                 if (id !== 'start') {
                     // Update the model with the state position and display ID
                     $.extend(model.states[id], $(this).position());
-                    $.extend(model.states[id], {displayId: $(this).data('displayid')});
+                    $.extend(model.states[id], {
+                        displayId: $(this).data('displayid')
+                    });
                 }
             });
             model.bulkTests = {
@@ -494,26 +555,39 @@ var fsm = (function() {
                 if (ui.newPanel.attr('id') === 'browserStorage') {
                     // Update buttons for browser storage tab
                     saveLoadDialog.dialog('option', 'buttons', {
-                        Cancel: function() { saveLoadDialog.dialog('close'); },
-                        Save: function() { if (finishSaving()) { saveLoadDialog.dialog('close'); } }
+                        Cancel: function() {
+                            saveLoadDialog.dialog('close');
+                        },
+                        Save: function() {
+                            if (finishSaving()) {
+                                saveLoadDialog.dialog('close');
+                            }
+                        }
                     });
                 } else if (ui.newPanel.attr('id') === 'plaintext' || ui.newPanel.attr('id') === 'shareableURL') {
                     ui.newPanel.find('textarea').select(); // Select text area content
                     saveLoadDialog.dialog('option', 'buttons', {
-                        Copy: function() { ui.newPanel.find('textarea').select(); document.execCommand('copy'); },
-                        Close: function() { saveLoadDialog.dialog('close'); }
+                        Copy: function() {
+                            ui.newPanel.find('textarea').select();
+                            document.execCommand('copy');
+                        },
+                        Close: function() {
+                            saveLoadDialog.dialog('close');
+                        }
                     });
                 }
             };
 
             saveLoadDialog.dialog('option', 'title', 'Save Automaton'); // Set dialog title
             $('#saveLoadTabs').on('tabsactivate', buttonUpdater); // Update buttons on tab change
-            buttonUpdater(null, { newPanel: $('#saveLoadTabs div').eq($('#saveLoadTabs').tabs('option', 'active')) }); // Initialize button state
+            buttonUpdater(null, {
+                newPanel: $('#saveLoadTabs div').eq($('#saveLoadTabs').tabs('option', 'active'))
+            }); // Initialize button state
 
             refreshLocalStorageInfo(); // Refresh the list of stored FSMs
             $('#plaintext textarea').val(serializedModel); // Set serialized model in plaintext tab
             $('#shareableURL textarea').val(window.location.href.split("#")[0] + '#' + encodeURIComponent(serializedModel)); // Create shareable URL
             saveLoadDialog.dialog('open'); // Open the save/load dialog
-		}
-	};
+        }
+    };
 })().init(); // Initialize the FSM module
