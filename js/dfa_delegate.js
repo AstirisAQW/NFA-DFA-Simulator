@@ -75,11 +75,6 @@ var dfa_delegate = (function() {
         dialogDiv.dialog("close"); // Close the dialog
     };
 
-    // Function to close the dialog and reset active connection
-    var dialogClose = function() {
-        dialogActiveConnection = null; // Reset active connection
-    };
-
     // Function to create the dialog for setting transitions
     var makeDialog = function() {
         dialogDiv = $('<div></div>', {

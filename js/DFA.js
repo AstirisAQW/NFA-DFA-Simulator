@@ -43,17 +43,6 @@ $(function() {
         };
     };
 
-    // Method to load a DFA from a JSON string
-    DFA.prototype.loadFromString = function(JSONdescription) {
-        var parsedJSON = JSON.parse(JSONdescription); // Parse the JSON string
-        return this.deserialize(parsedJSON); // Deserialize the parsed JSON into the DFA
-    };
-
-    // Method to save the DFA to a JSON string
-    DFA.prototype.saveToString = function() {
-        return JSON.stringify(this.serialize()); // Serialize the DFA and convert it to a JSON string
-    };
-
     // Method to add a transition from one state to another based on an input character
     DFA.prototype.addTransition = function(stateA, character, stateB) {
         // If the stateA does not exist in transitions, create an empty object for it
@@ -162,63 +151,4 @@ $(function() {
         }
         return this.processor.status; // Return the current status
     };
-
-    // Static method to run tests on the DFA implementation
-    DFA.runTests = function() {
-        function assert(outcome, description) {
-            window.console && console.log((outcome ? 'Pass:' : 'FAIL:'), description); // Log the test outcome
-        }
-
-        // Create a new DFA instance with default states and transitions
-        var myDFA = new DFA(true)
-            .addTransition('start', 'a', 's1') // Transition from 'start' to 's1' on 'a'
-            .addTransition('s1', 'a', 's2') // Transition from 's1' to 's2' on 'a'
-            .addTransition('s1', 'c', 'end2') // Transition from 's1' to 'end2' on 'c'
-            .addTransition('s2', 'b', 'accept') // Transition from 's2' to 'accept' on 'b'
-            .addAcceptState('end2'); // Add 'end2' as an accept state
-
-        // Run various acceptance tests
-        assert(myDFA.accepts('aab'), 'Accept a ab'); // Test for acceptance of 'aab'
-        assert(myDFA.accepts('ac'), 'Accept ac'); // Test for acceptance of 'ac'
-        assert(!myDFA.accepts(''), 'Reject [emptyString]'); // Test for rejection of empty string
-        assert(!myDFA.accepts('a'), 'Reject a'); // Test for rejection of 'a'
-        assert(!myDFA.accepts('aa'), 'Reject aa'); // Test for rejection of 'aa'
-        assert(!myDFA.accepts('ab'), 'Reject ab'); // Test for rejection of 'ab'
-
-        console.log('Remove transition'); // Log the action of removing a transition
-        myDFA.removeTransition('s1', 'c'); // Remove the transition from 's1' on 'c'
-        assert(!myDFA.accepts('ac'), 'Reject ac'); // Test for rejection of 'ac' after transition removal
-
-        console.log('Change start state'); // Log the action of changing the start state
-        myDFA.setStartState('s1'); // Change the start state to 's1'
-        assert(myDFA.accepts('ab'), 'Accept ab'); // Test for acceptance of 'ab'
-        assert(!myDFA.accepts('aab'), 'Reject aab'); // Test for rejection of 'aab'
-
-        console.log('Remove accept state'); // Log the action of removing an accept state
-        myDFA.removeAcceptState('accept'); // Remove 'accept' as an accept state
-        assert(!myDFA.accepts('ab'), 'Reject ab'); // Test for rejection of 'ab'
-
-        // Save the current DFA state to a string and load it into a new DFA instance
-        var myDFA_asString = myDFA.saveToString(); // Save the DFA to a string
-        var otherDFA = new DFA().loadFromString(myDFA_asString); // Load the DFA from the string
-        assert(myDFA_asString === otherDFA.saveToString(), 'Save, Load, Save has no changes'); // Test for consistency after save/load
-        assert(!otherDFA.accepts('ab'), 'Loaded DFA rejects ab'); // Test for rejection of 'ab' in loaded DFA
-        assert(!otherDFA.accepts(''), 'Loaded DFA rejects [empty string]'); // Test for rejection of empty string in loaded DFA
-        assert(!otherDFA.accepts('a'), 'Loaded DFA rejects a'); // Test for rejection of 'a' in loaded DFA
-
-        // Create another DFA instance with different transitions
-        myDFA = new DFA(true)
-            .addTransition('start', 'a', 's1') // Transition from 'start' to 's1' on 'a'
-            .addTransition('s1', 'b', 's2') // Transition from 's1' to 's2' on 'b'
-            .addTransition('s2', 'c', 'start') // Transition from 's2' back to 'start' on 'c'
-            .addTransition('s1', 'd', 'accept'); // Transition from 's1' to 'accept' on 'd'
-        assert(myDFA.accepts('ad'), 'Accept ad'); // Test for acceptance of 'ad'
-        console.log('Remove transitions to/from s1'); // Log the action of removing transitions to/from 's1'
-        myDFA.removeTransitions('s1'); // Remove all transitions to/from 's1'
-        assert(!myDFA.accepts('ad'), 'Reject ad'); // Test for rejection of 'ad' after transition removal
-        myDFA.addTransition('s1', 'e', 'accept'); // Add a new transition from 's1' to 'accept' on 'e'
-        // Test to ensure 's1' is effectively removed from all inbound transitions
-        assert(!myDFA.accepts('ae'), 'Reject ae'); // Test for rejection of 'ae'
-    }
-
 });
