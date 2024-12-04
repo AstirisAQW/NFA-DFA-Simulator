@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DFA and NFA Simulator</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+      .output,
+      .list {
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+      }
+      #network {
+        width: 600px;
+        height: 400px;
+        border: 1px solid lightgray;
+      }
+      .hidden {
+        display: none;
+      }
+    </style>
+    <!-- Include Vis.js -->
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/vis-network@9.1.2/dist/vis-network.min.js"
+    ></script>
+  </head>
+
+  <body>
+    <h1>DFA and NFA Simulator</h1>
+
+    <!-- Dropdown to select automaton type -->
+    <div>
+      <label for="automatonType">Choose Automaton Type:</label>
+      <select id="automatonType" onchange="initializeAutomaton()">
+        <option value="DFA">DFA</option>
+        <option value="NFA">NFA</option>
+      </select>
+    </div>
+
+    <!-- Add states -->
+    <div>
+      <h2>Add States</h2>
+      <input type="text" id="stateName" placeholder="State Name" />
+      <input type="checkbox" id="startState" /> Start State
+      <input type="checkbox" id="acceptState" /> Accept State
+      <button onclick="addState()">Add State</button>
+    </div>
+
+    <!-- Add transitions -->
+    <div>
+      <h2>Add Transitions</h2>
+      <input type="text" id="fromState" placeholder="From State" />
+      <input type="text" id="symbol" placeholder="Symbol" />
+      <input
+        type="text"
+        id="toState"
+        placeholder="To State (comma-separated for NFA)"
+      />
+      <button onclick="addTransition()">Add Transition</button>
+    </div>
+
+    <!-- Display states -->
+    <div class="list">
+      <h3>States</h3>
+      <ul id="stateList"></ul>
+    </div>
+
+    <!-- Display transitions -->
+    <div class="list">
+      <h3>Transitions</h3>
+      <ul id="transitionList"></ul>
+    </div>
+
+    <!-- Test strings -->
+    <div>
+      <h2>Test String</h2>
+      <input type="text" id="testString" placeholder="Input string" />
+      <button onclick="simulate()">Animate Simulation</button>
+    </div>
+
+    <!-- Graph visualization -->
+    <div id="network"></div>
+
+    <!-- Display result -->
+    <div class="output" id="result"></div>
+
+    <!-- External JavaScript files -->
+    <script src="/code/dfa.js"></script>
+    <script src="/code/nfa.js"></script>
+    <script src="/code/simulator.js"></script>
+  </body>
+</html>
