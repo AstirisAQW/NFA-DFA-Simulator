@@ -229,27 +229,14 @@ var fsm = (function() {
 		},
 
         test: function(input) {
-            if ($.type(input) === 'string') {
-                $('#testResult').html('Testing...'); // Show testing message
-                var accepts = delegate.fsm().accepts(input); // Test if input is accepted
-                $('#testResult').html(accepts ? 'Accepted' : 'Rejected').effect('highlight', {color: accepts ? '#bfb' : '#fbb'}, 1000); // Show result with highlight
-            } else {
-                $('#resultConsole').empty(); // Clear the result console
-                var makePendingEntry = function(input, type) {
-                    return $('<div></div>', {'class': 'pending', title: 'Pending'}).append(type + ': ' + (input === '' ? '[Empty String]' : input)).appendTo('#resultConsole'); // Create pending entry
-                };
-                var updateEntry = function(result, entry) {
-                    entry.removeClass('pending').addClass(result).attr('title', result).append(' -- ' + result); // Update entry with result
-                };
-                $.each(input.accept, function(index, string) {
-                    updateEntry((delegate.fsm().accepts(string) ? 'Pass' : 'Fail'), makePendingEntry(string, 'Accept')); // Test accept strings
-                });
-                $.each(input.reject, function(index, string) {
-                    updateEntry((delegate.fsm().accepts(string) ? 'Fail' : 'Pass'), makePendingEntry(string, 'Reject')); // Test reject strings
-                });
-                $('#bulkResultHeader').effect('highlight', {color: '#add'}, 1000); // Highlight bulk result header
-            }
-            return self; // Return the FSM object
+            // Ensure the input is a string for testing
+            $.type(input) === 'string'
+            var accepts = delegate.fsm().accepts(input); // Test if input is accepted
+            // Display the result with highlighting effect
+            $('#testResult')
+                .html(accepts ? 'Accepted' : 'Rejected')
+                .effect('highlight', { color: accepts ? '#bfb' : '#fbb' });
+            return self; // Return the current FSM object for method chaining
         },
 
         debug: function(input) {
