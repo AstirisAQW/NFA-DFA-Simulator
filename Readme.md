@@ -1,72 +1,96 @@
 # DFA and NFA Simulator
 
-## Overview
+![image](https://github.com/user-attachments/assets/44707ed7-7cc1-44f1-930e-234c3f9068db)
 
-This project is a web-based tool designed to help users define, visualize, and simulate Deterministic Finite Automata (DFA) and Non-deterministic Finite Automata (NFA). It provides an interactive way to understand how these automata process input strings.
+## Description
+
+This project is a **DFA (Deterministic Finite Automaton)** and **NFA (Non-deterministic Finite Automaton)** simulator. It provides an interactive environment for users to create, visualize, and simulate finite automata. The tool is designed to help users understand the behavior of DFAs and NFAs by allowing them to construct automata, define transitions, and test input strings.
+
+---
 
 ## Features
 
-*   **Automaton Selection:** Choose between DFA and NFA modes.
-*   **State Definition:**
-    *   Add states with unique names.
-    *   Designate a single start state.
-    *   Mark one or more states as accept states.
-*   **Transition Definition:**
-    *   Specify transitions with a `from state`, `input symbol`, and `to state(s)`.
-    *   For NFAs, a single transition can lead to multiple states (comma-separated).
-    *   Epsilon (ε) transitions are supported for NFAs.
-*   **Interactive Graph Visualization:**
-    *   Automata are visualized using [Vis.js](https://visjs.github.io/vis-network/docs/network/).
-    *   States appear as nodes:
-        *   Start state: Light blue background (or light seagreen if also an accept state).
-        *   Accept states: Light green background, larger size, and thicker border.
-        *   Other states: White background.
-    *   Transitions are represented as directed edges labeled with input symbols. Epsilon transitions are styled distinctly.
-*   **String Simulation with Animation:**
-    *   Input a test string (including empty string) to simulate its processing by the defined automaton.
-    *   The simulation is animated step-by-step on the graph:
-        *   Currently active state(s) are highlighted (orange).
-        *   States just exited are highlighted (yellow).
-        *   Transitions taken in the current step are highlighted (red for symbol, darkorange for epsilon).
-        *   Final states are highlighted (green for accepted, darkred for rejected).
-    *   The final result (Accepted/Rejected) is displayed.
-*   **Dynamic Lists:** View lists of currently defined states and transitions.
+- **Interactive Automata Creation**: Add states, transitions, and define start/accept states.
+- **Visualization**: Automata are visualized using the Vis.js library, making it easy to understand the structure and flow.
+- **Simulation**: Test input strings to see how the automaton processes them.
+- **DFA and NFA Support**: Switch between DFA and NFA modes to explore the differences in behavior.
+- **User-Friendly Interface**: Built with Bootstrap for a clean and responsive design.
 
-*(Vis.js is included via CDN in `index.html`)*
+---
 
-## How to Use
+## Setup
 
-1.  **Open `index.html`:** Launch the `index.html` file in a modern web browser from the `NFA-DFA` directory.
-2.  **Select Automaton Type:**
-    *   Use the dropdown menu to choose "DFA" or "NFA". This initializes the simulator for the selected type.
-3.  **Add States:**
-    *   In the "Add States" section:
-        *   Enter a unique name for the state in the "State Name" field.
-        *   Check the "Start State" box if this is the initial state (any previous start state will be deselected).
-        *   Check the "Accept State" box if this is an accepting/final state.
-        *   Click "Add State". The state will appear in the "States" list and on the graph.
-4.  **Add Transitions:**
-    *   In the "Add Transitions" section:
-        *   Enter the "From State" (name of an existing state).
-        *   Enter the "Symbol" for the transition. For NFAs, leave blank or type `ε` for an epsilon transition.
-        *   Enter the "To State". For NFAs, if a symbol leads to multiple states, enter their names separated by commas (e.g., `q2,q3`). For DFAs, enter a single state name.
-        *   Click "Add Transition". The transition will appear in the "Transitions" list and on the graph.
-5.  **Test String:**
-    *   In the "Test String" section:
-        *   Enter the input string you want to test in the "Input string" field.
-        *   Click "Animate Simulation".
-6.  **Observe Simulation:**
-    *   The graph will visually animate the automaton's step-by-step processing of the string.
-    *   The "Result" area below the graph will display messages about the current step and the final outcome (Accepted or Rejected).
+### Prerequisites
 
-## Technologies Used
+- A modern web browser (e.g., Chrome, Firefox, Edge).
+- Git (optional, for cloning the repository).
 
-*   HTML5
-*   CSS3
-*   JavaScript (ES6+)
-*   [Vis.js Network](https://visjs.github.io/vis-network/docs/network/) - For dynamic graph visualization.
+### Installation
 
-## Notes on NFA Simulation
+1. **Clone the repository** (or download the ZIP file):
 
-*   The NFA simulation animation tracks all concurrently active states, including those reached via epsilon transitions.
-*   An input string is considered "Accepted" by an NFA if, after processing the entire string, at least one of the set of active states (after all epsilon closures) is an accept state. If no active states remain or none of the final active states are accept states, the string is "Rejected".
+   ```bash
+   git clone https://github.com/KvassAndVodka/DFA-and-NFA-Simulator.git
+
+   ```
+
+2. Navigate to the project directory:
+
+   ```bash
+   cd DFA-and-NFA-Simulator
+
+   ```
+
+3. Open the ui.html file in your web browser:
+   ```bash
+   open ui.html  # On macOS/Linux
+   start ui.html # On Windows
+   ```
+
+Alternatively, you can drag and drop the `ui.html` file into your browser.
+
+---
+
+## Usage
+
+### Creating an Automaton
+
+1. Choose Automaton Type:
+
+   - Use the dropdown menu to select either DFA or NFA.
+
+2. Add States:
+
+   - Click the "Add State" button to create new states.
+   - Double-click a state to mark it as an accept state.
+
+3. Define Transitions:
+
+   - Select a state, then choose an input symbol and the target state to create a transition.
+   - For NFAs, multiple transitions from the same state with the same input symbol are allowed.
+
+4. Set Start State:
+   - Click the "Set Start State" button and select the initial state.
+
+Simulating Input Strings
+
+1. Enter an input string in the provided text box.
+2. Click the "Simulate" button to see how the automaton processes the string.
+3. The simulation will highlight the path taken and indicate whether the string is accepted or rejected.
+
+Visualizing the Automaton
+
+- The automaton is automatically visualized using the Vis.js library.
+- States and transitions are displayed as nodes and edges, respectively.
+- Accept states are highlighted with a double circle.
+
+## External Libraries Used
+
+- Bootstrap: A CSS framework for styling the interface and ensuring responsiveness.
+- Vis.js: A powerful library for visualizing networks and graphs, used to render the automata.
+
+## Contributors
+
+- Javier Raut (https://github.com/KvassAndVodka)
+- Krystal Heart Bacalso (https://github.com/Sambilaycord)
+- Joseph Deysolong (https://github.com/AstirisAQW)

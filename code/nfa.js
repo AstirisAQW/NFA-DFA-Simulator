@@ -8,17 +8,24 @@ class NFA {
   }
 
   addState(state, isStart = false, isAccept = false) {
-    // Ensure state names are unique
+    if (!state) {
+      throw new Error("State name cannot be empty.");
+    }
     if (this.states.has(state)) {
-      alert(`State '${state}' already exists.`);
-      return false;
+      throw new Error(`State '${state}' already exists.`);
     }
 
     this.states.add(state);
+
     if (isStart) {
-      // Remove previous start state if exists
+      if (this.startState) {
+        console.warn(
+          `Changing start state from '${this.startState}' to '${state}'.`
+        );
+      }
       this.startState = state;
     }
+
     if (isAccept) {
       this.acceptStates.add(state);
     }
@@ -26,13 +33,16 @@ class NFA {
   }
 
   addTransition(fromState, symbol, toStates) {
-    // Ensure fromState exists
     if (!this.states.has(fromState)) {
       alert(`From state '${fromState}' does not exist.`);
       return false;
     }
 
-    // Ensure all toStates exist
+    // If symbol is empty, treat it as an epsilon transition
+    if (!symbol.trim()) {
+      symbol = "ε";
+    }
+
     const stateArray = Array.isArray(toStates) ? toStates : [toStates];
     for (const state of stateArray) {
       if (!this.states.has(state)) {
@@ -60,17 +70,51 @@ class NFA {
     return true;
   }
 
-  simulate(input, currentStates = [this.startState], index = 0) {
-    if (index === input.length) {
-      return currentStates.some((state) => this.acceptStates.has(state));
-    }
-    const symbol = input[index];
-    const nextStates = new Set();
-    for (const state of currentStates) {
-      if (this.transitions[state] && this.transitions[state][symbol]) {
-        nextStates.add(...this.transitions[state][symbol]);
+  // Helper method to get epsilon-closure of a state
+  getEpsilonClosure(states) {
+    const closure = new Set(states);
+    const stack = Array.from(states);
+
+    while (stack.length > 0) {
+      const state = stack.pop();
+      if (this.transitions[state] && this.transitions[state]["ε"]) {
+        this.transitions[state]["ε"].forEach((nextState) => {
+          if (!closure.has(nextState)) {
+            closure.add(nextState);
+            stack.push(nextState);
+          }
+        });
       }
     }
+
+    return closure;
+  }
+
+  // Update the simulate function to handle epsilon transitions
+  simulate(input, currentStates = [this.startState], index = 0) {
+    if (index === input.length) {
+      // Final check if any of the current states is an accepting state
+      const epsilonClosure = this.getEpsilonClosure(new Set(currentStates));
+      return Array.from(epsilonClosure).some((state) =>
+        this.acceptStates.has(state)
+      );
+    }
+
+    const symbol = input[index];
+    const nextStates = new Set();
+
+    // Get epsilon closure for all current states
+    const epsilonClosure = this.getEpsilonClosure(new Set(currentStates));
+
+    // Transition for the current symbol
+    epsilonClosure.forEach((state) => {
+      if (this.transitions[state] && this.transitions[state][symbol]) {
+        this.transitions[state][symbol].forEach((nextState) => {
+          nextStates.add(nextState);
+        });
+      }
+    });
+
     return this.simulate(input, Array.from(nextStates), index + 1);
   }
 }
