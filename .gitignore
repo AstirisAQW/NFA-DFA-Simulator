@@ -1,5 +1,13 @@
+# Node dependencies
+node_modules/
+
+# Build outputs
+dist/
+dist-ssr/
+*.local
+
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -7,18 +15,29 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Vite
+.vite/
 
-# Editor directories and files
-.vscode/*
+# Local environment settings
+.env
+.env.*.local
+
+# Editor and IDE settings
+.vscode/
 !.vscode/extensions.json
-.idea
-.DS_Store
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# macOS and system files
+.DS_Store
+Thumbs.db
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Lockfiles (optional — choose one to commit if working in teams)
+package-lock.json
