@@ -1,5 +1,5 @@
 import React from 'react';
-import { ReactFlowProvider, useNodesState, useEdgesState, type Connection } from 'reactflow'; // Changed
+import { ReactFlowProvider, useNodesState, useEdgesState, type Connection } from 'reactflow';
 import './App.css';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
@@ -11,11 +11,9 @@ function AppInternal() {
   const {
     automatonType,
     setAutomatonType,
-    // initializeAutomaton, // Called internally by setAutomatonType or on mount
-    nodes: automatonNodes, // Renamed to avoid conflict with useNodesState
-    edges: automatonEdges, // Renamed
-    message,
-    // setMessage, // For ResultDisplay
+    nodes: hookNodes, // Renamed: these are from useAutomaton
+    edges: hookEdges, // Renamed: these are from useAutomaton
+    message, // General messages from the hook
     addAutomatonState,
     addAutomatonTransition,
     removeAutomatonState,
@@ -26,37 +24,35 @@ function AppInternal() {
     nextSimulationStep,
     resetSimulationVisuals,
     isSimulating,
-    currentSimulationStepMessage
+    currentSimulationStepMessage // Specific message for simulation step
   } = useAutomaton();
 
-  // React Flow's own state handlers for node/edge changes (e.g., dragging)
-  // These are distinct from the nodes/edges derived from the automaton model
-  const [rfNodes, setRfNodes, onRfNodesChange] = useNodesState(automatonNodes);
-  const [rfEdges, setRfEdges, onRfEdgesChange] = useEdgesState(automatonEdges);
-
-  // Update React Flow nodes/edges when automaton model changes
-  React.useEffect(() => {
-    setRfNodes(automatonNodes);
-  }, [automatonNodes, setRfNodes]);
+  const [rfNodes, setRfNodes, onRfNodesChange] = useNodesState(hookNodes);
+  const [rfEdges, setRfEdges, onRfEdgesChange] = useEdgesState(hookEdges);
 
   React.useEffect(() => {
-    setRfEdges(automatonEdges);
-  }, [automatonEdges, setRfEdges]);
+    setRfNodes(hookNodes);
+  }, [hookNodes, setRfNodes]);
 
-  // Handler for connecting nodes manually in graph (optional feature)
+  React.useEffect(() => {
+    setRfEdges(hookEdges);
+  }, [hookEdges, setRfEdges]);
+
   const handleConnect = (params: Connection) => {
-    // Example: if you want to auto-create a transition when nodes are connected
-    // const symbol = prompt("Enter symbol for new transition:");
-    // if (symbol && params.source && params.target) {
-    //   addAutomatonTransition(params.source, symbol, params.target);
+    console.log("Connect event (manual edge creation not implemented by default):", params);
+    // If you want to allow users to draw edges to create transitions:
+    // const symbol = prompt("Enter symbol for new transition (or leave empty for NFA epsilon):");
+    // if (params.source && params.target) { // symbol can be null if user cancels prompt
+    //   addAutomatonTransition(params.source, symbol || '', params.target);
     // }
-    console.log("Connect event:", params);
   };
+
+  const displayMessage = currentSimulationStepMessage || message;
 
   return (
     <>
       <Header />
-      <ResultDisplay message={currentSimulationStepMessage || message} />
+      <ResultDisplay message={displayMessage} />
       <div className="app-container">
         <Sidebar
           automatonType={automatonType}
@@ -65,13 +61,13 @@ function AppInternal() {
           onAddTransition={addAutomatonTransition}
           onDeleteState={removeAutomatonState}
           onDeleteTransition={removeAutomatonTransition}
-          states={automatonStates}
+          states={automatonStates} // These are AutomatonStateDefinition[]
           transitions={automatonTransitions}
           onStartSimulation={startSimulation}
           onNextSimulationStep={nextSimulationStep}
           onResetSimulationVisuals={resetSimulationVisuals}
           isSimulating={isSimulating}
-          simulationMessage={currentSimulationStepMessage || message}
+          simulationMessage={displayMessage} // Pass the combined message
         />
         <GraphDisplay
           nodes={rfNodes}
@@ -85,7 +81,6 @@ function AppInternal() {
   );
 }
 
-// Wrap with ReactFlowProvider
 function App() {
   return (
     <ReactFlowProvider>
@@ -93,6 +88,5 @@ function App() {
     </ReactFlowProvider>
   );
 }
-
 
 export default App;

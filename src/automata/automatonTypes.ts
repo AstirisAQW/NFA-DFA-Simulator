@@ -1,4 +1,4 @@
-export interface State {
+export interface State { // This is AutomatonStateDefinition
   id: string;
   isStartState: boolean;
   isAcceptState: boolean;
