@@ -1,42 +1,131 @@
+body {
+  font-family: sans-serif;
+  margin: 0;
+  background-color: #242424;
+  color: rgba(255, 255, 255, 0.87);
+}
+
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.app-container {
+  display: flex;
+  flex-grow: 1;
+  overflow: hidden; /* Important for layout */
+}
+
+.sidebar {
+  width: 350px;
+  padding: 20px;
+  background-color: #2f2f2f;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border-right: 1px solid #444;
+}
+
+.graph-display-container {
+  flex-grow: 1;
+  background-color: #1a1a1a; /* Dark background for React Flow */
+  position: relative; /* For potential overlays or controls */
+}
+
+.form-section, .table-section {
+  background-color: #3a3a3a;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.form-section h3, .table-section h3 {
+  margin-top: 0;
+  color: #00bcd4; /* Accent color */
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 0.9em;
+}
+
+input[type="text"],
+select {
+  width: calc(100% - 12px);
+  padding: 8px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  border: 1px solid #555;
+  background-color: #242424;
+  color: white;
+}
+
+input[type="checkbox"] {
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+button {
+  padding: 10px 15px;
+  background-color: #007bff; /* Primary button color */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-right: 5px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+button.delete-btn {
+  background-color: #dc3545; /* Danger color for delete */
+  font-size: 0.8em;
+  padding: 4px 8px;
+}
+button.delete-btn:hover {
+  background-color: #c82333;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #444;
+  font-size: 0.9em;
+}
+
+th {
+  background-color: #3f3f3f;
+}
+
+.result-display {
+  padding: 10px;
+  background-color: #333;
+  color: #eee;
   text-align: center;
+  font-size: 0.9em;
+  min-height: 20px; /* Ensure it's visible even when empty */
+  border-bottom: 1px solid #444;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+.simulation-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
+.simulation-controls input[type="text"] {
+    flex-grow: 1;
+    min-width: 100px; /* Ensure it doesn't get too small */
+} 
